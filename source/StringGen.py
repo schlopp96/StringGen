@@ -22,10 +22,13 @@ from loadingSequence import load
 
 #++++++++++Functions++++++++++#
 def programStart():
-    '''Starts Program Introduction.
-    \n- Displays Current time Using (yyy-mm-dd hh:mm:ss) Format.
-    \n- Displays Welcome Message.
-    \n- Starts Application.'''
+    '''
+    Starts Program Introduction.
+    
+    - Displays Current time Using (yyy-mm-dd hh:mm:ss) Format.
+    - Displays Welcome Message.
+    - Starts Application.
+    '''
     currentTime = str(ct.now())[:16]
     print('\nWelcome to Schlopp\'s Word/Phrase/String Generator!\n')
     print('The Current Time Is:\n{}'.format(currentTime))  # Displays time.
@@ -67,6 +70,7 @@ def viewLastOverwrite():
 
 def print_menu():  # Draws main menu.
     '''Displays Options for Saved String-Iterations'''
+
     print(30 * "-", "StringGen MENU", 30 * "-")
     print("| ", "1.  View Save Slot 1 ", "    |")
     print("| ", "2.  View Save Slot 2 ", "    |")
@@ -169,19 +173,24 @@ def saveSlots():
                     # Slot 2
                     elif menuChoice == '2':
                         print('\nSave Slot 2:\n{}'.format(saveSlots_FH[4]))
+
                         while True:
                             print(
                                 'Press [ENTER] to continue, or type \"delete\" to erase slot.'
                             )
                             userChoice = input('> ').lower()
+
                             if userChoice.startswith('del'):
                                 deleteFileLines(
                                     r'.\StringGen\generated\allSavedPWs.txt',
                                     [3, 4, 5])
                                 break
+
                             else:
                                 break
+
                         continue
+
                     # Slot 3
                     elif menuChoice == '3':
                         print('\nSave Slot 3:\n{}'.format(saveSlots_FH[7]))
@@ -198,6 +207,7 @@ def saveSlots():
                             else:
                                 break
                         continue
+                    
                     # Slot 4
                     elif menuChoice == '4':
                         print('\nSave Slot 4:\n{}'.format(saveSlots_FH[10]))
@@ -214,6 +224,7 @@ def saveSlots():
                             else:
                                 break
                         continue
+                    
                     # Slot 5
                     elif menuChoice == '5':
                         print('\nSave Slot 5:\n{}'.format(saveSlots_FH[13]))
@@ -230,6 +241,7 @@ def saveSlots():
                             else:
                                 break
                         continue
+                    
                     # Slot 6
                     elif menuChoice == '6':
                         print('\nSave Slot 6:\n{}'.format(saveSlots_FH[16]))
@@ -246,6 +258,7 @@ def saveSlots():
                             else:
                                 break
                         continue
+                    
                     # Slot 7
                     elif menuChoice == '7':
                         print('\nSave Slot 7:\n{}'.format(saveSlots_FH[19]))
@@ -262,6 +275,7 @@ def saveSlots():
                             else:
                                 break
                         continue
+                    
                     # Slot 8
                     elif menuChoice == '8':
                         print('\nSave Slot 8:\n{}'.format(saveSlots_FH[22]))
@@ -278,6 +292,7 @@ def saveSlots():
                             else:
                                 break
                         continue
+                    
                     # Slot 9
                     elif menuChoice == '9':
                         print('\nSave Slot 9:\n{}'.format(saveSlots_FH[25]))
@@ -294,6 +309,7 @@ def saveSlots():
                             else:
                                 break
                         continue
+                    
                     # Slot 10
                     elif menuChoice == '10':
                         print('\nSave Slot 10:\n{}'.format(saveSlots_FH[28]))
@@ -310,13 +326,16 @@ def saveSlots():
                             else:
                                 break
                         continue
+                    
                     # Slot 11
                     elif menuChoice == '11':  # Returns the Random Generator Function.
                         load('Loading', 'Ok!')
                         wordGenerator()
+                    
                     # Slot 12
                     elif menuChoice == '12':  # Displays ALL SAVED PWs.
                         print('All Saved PWs:\n')
+                    
                         print('\nSlot 1: ' + saveSlots_FH[1])
                         print('\nSlot 2: ' + saveSlots_FH[4])
                         print('\nSlot 3: ' + saveSlots_FH[7])
@@ -328,6 +347,7 @@ def saveSlots():
                         print('\nSlot 9: ' + saveSlots_FH[25])
                         print('\nSlot 10: ' + saveSlots_FH[28])
                         continue
+                    
                     # Slot 13
                     elif menuChoice == '13':
                         # ERASES ALL FROM PW FILE!!
@@ -450,6 +470,11 @@ def wordGenerator():  # Begin Word Generation Loop:
                             os.remove(
                                 r'.\StringGen\generated\lastgenerated.txt')
 
+                # "Saved PWs" file does not exist, so delete "last generated" file:
+                elif os.path.exists(
+                        r'.\StringGen\generated\allSavedPWs.txt') == False:
+                    os.remove(r'.\StringGen\generated\lastgenerated.txt')
+
                 load('Exiting Program', 'Good-Bye')
                 s(0.75)
                 ex(0)
@@ -501,21 +526,18 @@ def wordGenerator():  # Begin Word Generation Loop:
                         'ERROR:\nPW file has exceeded capacity. Please delete some to make room.'
                     )
 
-                    saveSlots(
-                    )  #Returns to saved pw menu so user may clear space if they wish.
+                    #Returns to saved pw menu so user may clear space if they wish.
+                    saveSlots()
 
                 saveSlots_FH = open(
                     r'.\StringGen\generated\allSavedPWs.txt', 'a'
                 )  # File is opened in 'append mode' to add phrase to the end of "allSavedPWs.txt".
 
-                saveSlots_FH.write(
-                    'Time Saved: {}\n'.format(wordSaveTime)
-                )  # Writes the time of saving word to the document.
-
-                saveSlots_FH.write(
-                    '{}\n\n'.format(word)
-                )  # Writes the PW below the time saved, and includes a newline.
-                saveSlots_FH.close()  # closes allsavedPW file.
+                # Writes the time of saving word to the document:
+                saveSlots_FH.write('Time Saved: {}\n{}\n\n'.format(
+                    wordSaveTime, word))
+                # Buffers/closes allsavedPW file.
+                saveSlots_FH.close()
 
                 lastGenerated = open(
                     r'.\StringGen\generated\lastgenerated.txt', 'w'
