@@ -446,16 +446,16 @@ def wordGenerator():  # Begin Word Generation Loop:
                 continue
 
             else:
-                # User enters a valid integer/input:
+                #* User enters a valid integer/input:
                 break
 
         except:
-            # User input is not an integer:
+            #! User input is not an integer:
 
             if passLen == 'e':
-                # Prevents blank files from being left behind, as bugs would result.
+                #! Prevents blank files from being left behind, as bugs would result.
 
-                # Blank "Saved PWs" file deletion:
+                #! "Saved PWs" exists, but is blank, so delete all files:
                 if os.path.exists(
                         r'.\StringGen\generated\allSavedPWs.txt') == True:
                     if len(
@@ -463,17 +463,18 @@ def wordGenerator():  # Begin Word Generation Loop:
                             readlines()) < 1:
                         os.remove(r'.\StringGen\generated\allSavedPWs.txt')
 
-                        # "Last generated string" file deletion:
+                        #! "Last generated string" file deletion:
                         if os.path.exists(
                                 r'.\StringGen\generated\lastgenerated.txt'
                         ) == True:
                             os.remove(
                                 r'.\StringGen\generated\lastgenerated.txt')
 
-                # "Saved PWs" file does not exist, so delete "last generated" file:
+                #! "Saved PWs" file does not exist, so delete "last generated" file if it exists:
                 elif os.path.exists(
                         r'.\StringGen\generated\allSavedPWs.txt') == False:
-                    os.remove(r'.\StringGen\generated\lastgenerated.txt')
+                    if os.path.exists(r'.\StringGen\generated\lastgenerated.txt') == True:
+                        os.remove(r'.\StringGen\generated\lastgenerated.txt')
 
                 load('Exiting Program', 'Good-Bye')
                 s(0.75)
