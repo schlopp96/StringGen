@@ -13,7 +13,6 @@
 import os
 import secrets
 from datetime import datetime as ct
-from pprint import pp
 from sys import exit as ex
 from time import sleep as s
 
