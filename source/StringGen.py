@@ -1,20 +1,25 @@
-## #!StringGen - v0.1.2-Alpha
-#! CLI String-Generation Tool
+# #^ StringGen - v0.2.3-Alpha Build
+#! Random-String-Generation CLI Tool
+
 #TODO:
-#? Reorganize/Modernize code to be MUCH more readable.
 #* Implement a global menu function that users can use to navigate, rather than being directed through functions.
 #! Fix "View all save slots" option to not include unnecessary "ERROR: Save slot empty" after returning slots.
-#* Break down giant functions (take stringGenerator() for example) into smaller, more efficient & reusable functions.
 
 #?++++++++++Libraries/Modules++++++++++#
-
-import os
 import secrets
 from datetime import datetime as ct
+from os import chdir as cwd
+from os import remove, rename
+from os.path import dirname as curFolder
+from os.path import exists
 from sys import exit as ex
 from time import sleep as s
 
 from loadingSequence import load
+
+cwd(curFolder(curFolder(__file__)))
+
+#?++++++++++++++++++++++++++++++++++++?#
 
 
 #!++++++++++Functions++++++++++#
@@ -27,19 +32,17 @@ def programStart() -> None:
     - Starts Application.
     """
     currentTime = str(ct.now())[:16]
-    print('\nWelcome to StringGen v0.1.2-Alpha!\n')
+    print('\nWelcome to StringGen v0.2.3-Alpha!\n')
     print('The Current Time Is:\n{}'.format(currentTime))  # Displays time.
     viewLastGenerated()
 
 
 def viewLastGenerated():
-    '''
-    Returns last string that was saved, or continues to string generator if there isn't one.
-    
-    '''
+    """Returns last string that was saved, or continues to string generator if there isn't one."""
+
     #? Checks for existing "last generated" file:
-    if os.path.exists(r'.\StringGen\generated\lastgenerated.txt') == True:
-        lastGenerated = open('.\StringGen\generated\lastgenerated.txt').read()
+    if exists(r'.\generated\lastgenerated.txt') == True:
+        lastGenerated = open('.\generated\lastgenerated.txt').read()
         while True:
             choice_lastGenerated = input(
                 '\nWould you like to see your most recent saved entry? Y/N?\n> '
@@ -59,7 +62,7 @@ def viewLastGenerated():
                 s(0.75)
                 continue
     else:
-        lastGenerated = open('.\StringGen\generated\lastgenerated.txt', 'x')
+        lastGenerated = open(r'.\generated\lastgenerated.txt', 'x')
         lastGenerated.close()
         print(
             'No recently generated string detected.\nContinuing to random string generator.\n'
@@ -67,11 +70,8 @@ def viewLastGenerated():
         return stringGenerator()
 
 
-def displaySaves():
-    """
-    Displays Options for Saved String-Iterations
-    
-    """
+def menu_saveSlots():
+    """Displays Options for Saved String-Iterations."""
 
     print(30 * "-", "StringGen MENU", 30 * "-")
     print("| ", "1.  View Save Slot 1 ", "    |")
@@ -90,41 +90,62 @@ def displaySaves():
     print(74 * "-")
 
 
-def deleteFileLines(
-    original_file, line_numbers
-) -> None:  # Clears Specific Save Slots (lines from allsavedPWs.txt).
+def delFileLines(file_ORIGINAL: str, line_numbers: list) -> None:
     """
-    In a file (original_file), delete lines that match list of lines (line_numbers) user wants to delete.
+    Deletes specified line numbers from text file.
+
+    :param original_file | absolute-path to the file.
+    :type original_file (str)
+        - Make sure to include either DOUBLE SLASH MARKS, or a RAW-STRING LITERAL upon entering `file_ORIGINAL (str)` parameter.
+            - Correct Examples:
+                - Ex 1. `delLines(r"c:/Users/Desktop/textfile.txt", [0, 1, 2])`
+                - Ex 2. `delLines("c://users//desktop//textfile.txt", [0, 1, 2])`
+
+    :param line_numbers | Line numbers to delete, with a starting idex of ZERO.
+    :type line_numbers (list)
+        - Example:
+            - `delLines(filepath, [0, 1, 2])` would delete the first three lines from the document `filepath`.
     
+    :rtype (None)
     """
-    is_skipped = False  # if marked "True", delete from the original file/don't include in new file.
-    counter = 0  # Line Count
-    # Create name of dummy / temporary file
-    dummy_file = original_file + '.bak'
-    # Open original file in read only mode and dummy file in write mode
-    with open(original_file, 'r') as read_obj, open(dummy_file,
-                                                    'w') as write_obj:
-        # Line by line, copy data from original file to dummy file
-        for line in read_obj:
-            if counter not in line_numbers:  # If counter (int) is not included in line_numbers (list of specified lines to be skipped and deleted), then write to write_obj (include in new file, aka, don't delete).
-                write_obj.write(line)
+
+    print("\nValidating save-file location...")
+    s(2)
+    if exists(file_ORIGINAL) == True:
+        print(f'Save file "{file_ORIGINAL}" successfully validated!\n')
+        s(1)
+    else:
+        raise FileNotFoundError(
+            f'\n"{file_ORIGINAL}" cannot be found, or does not exist.\nPlease check your spelling, ensure that the file extension and/or syntax is correct, then try again.\n'
+        )
+
+    file_TEMP = file_ORIGINAL + '.bak'  #? Identical copy of original for modifying.
+    is_skipped: bool = False
+    line_counter: int = 0
+
+    with open(file_ORIGINAL, 'r') as file_READ, open(file_TEMP,
+                                                     'w') as file_WRITE:
+        for line in file_READ:
+            if line_counter not in line_numbers:
+                file_WRITE.write(line)
             else:
-                is_skipped = True  # If current line number (string) exists in the list provided by user (line_numbers), then skip copying that line(str).
-
-            counter += 1  # Move to next line.
-
-    if is_skipped:  # If any line is skipped (deleted) then rename dummy file as original file (Overwrite old file).
-        os.remove(original_file)
-        os.rename(dummy_file, original_file)
-    else:  # Otherwise, delete dummy file and leave original as is.  (Do not overwrite original file).
-        os.remove(dummy_file)
+                is_skipped = True
+            line_counter += 1
+    print(f'Deleting lines {line_numbers}...')
+    s(1.25)
+    print(
+        f'Done!\n\nSuccessfully removed lines {line_numbers} from "{file_ORIGINAL}".\n'
+    )
+    s(0.75)
+    if is_skipped:  #^ OVERWRITE file_ORIGINAL with file_TEMP contents.
+        remove(file_ORIGINAL)
+        return rename(file_TEMP, file_ORIGINAL)
+    else:  #^ Delete file_TEMP, do not overwrite file_ORIGINAL.
+        return remove(file_TEMP)
 
 
 def saveSlots():
-    """
-    Returns functional option menu to view/modify saved strings.
-    
-    """
+    """Returns functional option menu to view/modify saved strings."""
 
     while True:
         q = input(
@@ -133,11 +154,11 @@ def saveSlots():
         if q == 'y':
 
             while True:
-                # opens "allsavedPWs.txt" as a list of every line in the file:
-                saveSlots_FH = open(r'.\StringGen\generated\allSavedPWs.txt',
+                #? open "allsavedPWs.txt" as a list of every line within file:
+                saveSlots_FH = open(r'.\generated\allSavedPWs.txt',
                                     'r+').readlines()
 
-                displaySaves()
+                menu_saveSlots()
                 menuChoice: str = input(
                     'Enter [1-12] to make a selection, or enter "done" when finished.\n> '
                 ).lower()
@@ -155,19 +176,15 @@ def saveSlots():
                             userChoice = input('> ').lower()
 
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [0, 1, 2])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [0, 1, 2])
 
                                 if len(
-                                        open(
-                                            r'.\StringGen\generated\allSavedPWs.txt'
-                                        ).read()) < 1:
+                                        open(r'.\generated\allSavedPWs.txt').
+                                        read()) < 1:
                                     #? Deletes most recently generated string if allsavedPWs.txt is empty.
 
-                                    os.remove(
-                                        r'.\StringGen\generated\lastgenerated.txt'
-                                    )
+                                    remove(r'.\generated\lastgenerated.txt')
                                 break
 
                             else:
@@ -186,9 +203,8 @@ def saveSlots():
                             userChoice = input('> ').lower()
 
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [3, 4, 5])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [3, 4, 5])
                                 break
 
                             else:
@@ -205,9 +221,8 @@ def saveSlots():
                             )
                             userChoice = input('> ').lower()
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [6, 7, 8])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [6, 7, 8])
                                 break
                             else:
                                 break
@@ -222,9 +237,8 @@ def saveSlots():
                             )
                             userChoice = input('> ').lower()
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [9, 10, 11])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [9, 10, 11])
                                 break
                             else:
                                 break
@@ -239,9 +253,8 @@ def saveSlots():
                             )
                             userChoice = input('> ').lower()
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [12, 13, 14])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [12, 13, 14])
                                 break
                             else:
                                 break
@@ -256,9 +269,8 @@ def saveSlots():
                             )
                             userChoice = input('> ').lower()
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [15, 16, 17])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [15, 16, 17])
                                 break
                             else:
                                 break
@@ -273,9 +285,8 @@ def saveSlots():
                             )
                             userChoice = input('> ').lower()
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [18, 19, 20])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [18, 19, 20])
                                 break
                             else:
                                 break
@@ -290,9 +301,8 @@ def saveSlots():
                             )
                             userChoice = input('> ').lower()
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [21, 22, 23])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [21, 22, 23])
                                 break
                             else:
                                 break
@@ -307,9 +317,8 @@ def saveSlots():
                             )
                             userChoice = input('> ').lower()
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [24, 25, 26])
+                                delFileLines(r'.\generated\allSavedPWs.txt',
+                                             [24, 25, 26])
                                 break
                             else:
                                 break
@@ -324,21 +333,20 @@ def saveSlots():
                             )
                             userChoice = input('> ').lower()
                             if userChoice.startswith('del'):
-                                deleteFileLines(
-                                    r'.\StringGen\generated\allSavedPWs.txt',
-                                    [27, 28, 29])
+                                delFileLines(r'.\allSavedPWs.txt',
+                                             [27, 28, 29])
                                 break
                             else:
                                 break
                         continue
 
                     #! Slot 11
-                    elif menuChoice == '11':  # Returns the Random Generator Function.
+                    elif menuChoice == '11':  #& Returns the Random Generator Function.
                         load('Loading', 'Ok!')
-                        stringGenerator()
+                        return stringGenerator()
 
                     #! Slot 12
-                    elif menuChoice == '12':  # Displays ALL SAVED PWs.
+                    elif menuChoice == '12':  #& Displays ALL SAVED PWs.
                         print('All Saved PWs:\n')
 
                         print('\nSlot 1: ' + saveSlots_FH[1])
@@ -367,19 +375,13 @@ def saveSlots():
                                 #! Deletes both recently saved, and last-generated pw files:
 
                                 #* Checks for saved entry list & deletes upon discovery:
-                                if os.path.exists(
-                                        r'.\StringGen\generated\allSavedPWs.txt'
-                                ) == True:
-                                    os.remove(
-                                        r'.\StringGen\generated\allSavedPWs.txt'
-                                    )
+                                if exists(r'.\generated\allSavedPWs.txt'
+                                          ) == True:
+                                    remove(r'.\generated\allSavedPWs.txt')
                                 #* Checks for "recently generated" list & deletes upon discovery:
-                                if os.path.exists(
-                                        r'.\StringGen\generated\lastgenerated.txt'
-                                ) == True:
-                                    os.remove(
-                                        r'.\StringGen\generated\lastgenerated.txt'
-                                    )
+                                if exists(r'.\generated\lastgenerated.txt'
+                                          ) == True:
+                                    remove(r'.\generated\lastgenerated.txt')
 
                                 load('Clearing PW List', 'All PWs Cleared!')
                                 s(1)
@@ -421,23 +423,18 @@ def saveSlots():
 
 
 def stringGenerator():
-    '''
-    Function Responsible for Generating Random Strings.
-    
-    '''
+    """Function Responsible for Generating Random Strings."""
 
     #? Stores the string-converted time format (yyyy-mm-dd hh:mm).
     timeSaved = str(ct.now())[:16]
 
     while True:
-        #* Loop for users to determine PW length or if they would like to exit the program.
         print(
             '\nEnter the number of random words that you\'d like to generate.')
         passLen = input('Pass Length [Enter 1-30 or \"E\" to Exit]: ').lower()
-
-        #! Restricts valid inputs to be integers within the specified range (1-30 words):
         try:
             x = int(passLen)
+            #! Restricts valid inputs to be integers within the specified range (1-30 words):
 
             if x > 30:
                 print('\nThe max number of words is 30.\n')
@@ -458,27 +455,19 @@ def stringGenerator():
                 #! Prevents blank files from being left behind, as bugs would result.
 
                 #? Checks for existence of saved entries, and deletes "last generated" if there are none:
-                if os.path.exists(
-                        r'.\StringGen\generated\allSavedPWs.txt') == True:
-                    if len(
-                            open(r'.\StringGen\generated\allSavedPWs.txt').
-                            readlines()) < 1:
-                        os.remove(r'.\StringGen\generated\allSavedPWs.txt')
+                if exists(r'.\generated\allSavedPWs.txt') == True:
+                    if len(open(
+                            r'.\generated\allSavedPWs.txt').readlines()) < 1:
+                        remove(r'.\generated\allSavedPWs.txt')
 
                         #? "Last generated string" file deletion:
-                        if os.path.exists(
-                                r'.\StringGen\generated\lastgenerated.txt'
-                        ) == True:
-                            os.remove(
-                                r'.\StringGen\generated\lastgenerated.txt')
+                        if exists(r'.\generated\lastgenerated.txt') == True:
+                            remove(r'.\generated\lastgenerated.txt')
 
                 #? Checks for existence of "saved entries" file, and deletes "last generated" if former doesn't exist:
-                elif os.path.exists(
-                        r'.\StringGen\generated\allSavedPWs.txt') == False:
-                    if os.path.exists(
-                            r'.\StringGen\generated\lastgenerated.txt'
-                    ) == True:
-                        os.remove(r'.\StringGen\generated\lastgenerated.txt')
+                elif exists(r'.\generated\allSavedPWs.txt') == False:
+                    if exists(r'.\generated\lastgenerated.txt') == True:
+                        remove(r'.\generated\lastgenerated.txt')
                 load('Exiting Program', 'Good-Bye')
                 s(0.75)
                 ex(0)
@@ -489,8 +478,7 @@ def stringGenerator():
                 )
                 continue
 
-    with open(
-            r'.\StringGen\Dictionary\RandomWordDictionary.txt') as dictionary:
+    with open(r'.\Dictionary\RandomWordDictionary.txt') as dictionary:
         wordList: list = [
             words.strip() for words in dictionary
         ]  #* List containing all 1.5 million potential words to be generated contained in dictionary.
@@ -509,12 +497,9 @@ def stringGenerator():
 
         if saveOrNah == 'save':
 
-            if os.path.exists(
-                    r'.\StringGen\generated\allSavedPWs.txt') == True:
+            if exists(r'.\generated\allSavedPWs.txt') == True:
 
-                pwFileLen = open(
-                    r'.\StringGen\generated\allSavedPWs.txt'
-                ).readlines(
+                pwFileLen = open(r'.\generated\allSavedPWs.txt').readlines(
                 )  #? opens allsavedPWs.txt and pulls out content into a list.
 
                 #! If the requested generative length is above capacity (30), raise error:
@@ -527,13 +512,11 @@ def stringGenerator():
                     saveSlots()
 
                 #* Add result to both "saved" & "last generated" files:
-                saveSlots_FH = open(r'.\StringGen\generated\allSavedPWs.txt',
-                                    'a')
+                saveSlots_FH = open(r'.\generated\allSavedPWs.txt', 'a')
                 saveSlots_FH.write('Time Saved: {}\n{}\n\n'.format(
                     timeSaved, final_STRING))
                 saveSlots_FH.close()
-                lastGenerated = open(
-                    r'.\StringGen\generated\lastgenerated.txt', 'w')
+                lastGenerated = open(r'.\generated\lastgenerated.txt', 'w')
                 lastGenerated.write(final_STRING)
                 lastGenerated.close()
                 load('Saving to Open Slot', 'Successfully Saved!')
@@ -563,13 +546,11 @@ def stringGenerator():
 
             #! Creates new "saved" file if No passwords have been saved yet:
             else:
-                saveSlots_FH = open(r'.\StringGen\generated\allSavedPWs.txt',
-                                    'x')
+                saveSlots_FH = open(r'.\generated\allSavedPWs.txt', 'x')
                 saveSlots_FH.write('Time Saved: {}\n{}\n\n'.format(
                     timeSaved, final_STRING))
                 saveSlots_FH.close()
-                lastGenerated = open(
-                    r'.\StringGen\generated\lastgenerated.txt', 'w')
+                lastGenerated = open(r'.\generated\lastgenerated.txt', 'w')
                 lastGenerated.write(final_STRING)
                 lastGenerated.close()
                 load('Saving to Open Slot', 'Successfully Saved!')
@@ -601,12 +582,10 @@ def stringGenerator():
             return stringGenerator()
 
         elif saveOrNah == 'exit':
-            #? Checks for existence of "saved entries" file, and deletes "last generated" if former doesn't exist:
-            if os.path.exists(
-                    r'.\StringGen\generated\allSavedPWs.txt') == False:
-                if os.path.exists(
-                        r'.\StringGen\generated\lastgenerated.txt') == True:
-                    os.remove(r'.\StringGen\generated\lastgenerated.txt')
+            #& Check for existence of "saved entries" file, and deletes "last generated" if former doesn't exist:
+            if exists(r'.\generated\allSavedPWs.txt') == False:
+                if exists(r'.\generated\lastgenerated.txt') == True:
+                    remove(r'.\generated\lastgenerated.txt')
             load('Exiting Program', 'Good-Bye')
             return ex(0)
 
