@@ -1,6 +1,6 @@
 # StringGen
 
-> v0.3.3-Alpha
+> v0.4.0-Alpha
 
 ---
 
