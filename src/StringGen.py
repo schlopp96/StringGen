@@ -32,7 +32,7 @@ def programStart() -> Union[Any, NoReturn]:
     :returns: start-up sequence of program path.
     :rtype: Any | NoReturn
     """
-    print('\nWelcome to StringGen v0.4.0-Alpha!\n')
+    print('\nWelcome to StringGen v0.5.0-Alpha!\n')
     print(f'The Current Time Is:\n{ct.now().strftime("%Y-%m-%d %H:%M:%S")}'
           )  #? Displays time.
     return viewLastGenerated()
