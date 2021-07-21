@@ -141,4 +141,4 @@ cython_debug/
 generated/**
 
 # Changes to Program
-tag-notes.txt
+update-notes.md
