@@ -1,7 +1,7 @@
-# #^ StringGen - v0.5.0-Alpha Build
+# #^ StringGen - v0.6.1-Alpha Build
 #! Random-String-Generation CLI Tool
 #TODO: Begin GUI development.
-#NOTE:  #& Continue to work on new ideas.
+#FIXME:  #& Continue to work on new ideas.
 #?+++++++++++++++++++++++++++++Libraries/Modules+++++++++++++++++++++++++++++?#
 import secrets
 from datetime import datetime as ct
@@ -32,7 +32,7 @@ def programStart() -> Union[Any, NoReturn]:
     :returns: start-up sequence of program path.
     :rtype: Any | NoReturn
     """
-    print('\nWelcome to StringGen v0.5.0-Alpha!\n')
+    print('\nWelcome to StringGen v0.6.1-Alpha!\n')
     print(f'The Current Time Is:\n{ct.now().strftime("%Y-%m-%d %H:%M:%S")}'
           )  #? Displays time.
     return viewLastGenerated()
@@ -110,7 +110,7 @@ def viewSaved_menu() -> None:
     print(30 * "-")
 
 
-def view_saved() -> Any:
+def view_saved() -> Any:  # sourcery no-metrics
     """Process menu operations to view/modify saved strings and handle user input.
 
     :returns: operations chosen by user
@@ -142,13 +142,8 @@ def view_saved() -> Any:
 
                         #& Deletes most recently generated string if saveslots.txt is empty.
                         if len(open(r'.\generated\saveslots.txt').read()) < 1:
-
                             remove(r'.\generated\lastgenerated.txt')
-                        break
-
-                    else:
-                        break
-
+                    break
                 continue
 
             #! Slot 2
@@ -162,11 +157,7 @@ def view_saved() -> Any:
 
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt', [3, 4, 5])
-                        break
-
-                    else:
-                        break
-
+                    break
                 continue
 
             #! Slot 3
@@ -179,9 +170,7 @@ def view_saved() -> Any:
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt', [6, 7, 8])
-                        break
-                    else:
-                        break
+                    break
                 continue
 
             #! Slot 4
@@ -195,9 +184,7 @@ def view_saved() -> Any:
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt',
                                       [9, 10, 11])
-                        break
-                    else:
-                        break
+                    break
                 continue
 
             #! Slot 5
@@ -211,9 +198,7 @@ def view_saved() -> Any:
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt',
                                       [12, 13, 14])
-                        break
-                    else:
-                        break
+                    break
                 continue
 
             #! Slot 6
@@ -227,9 +212,7 @@ def view_saved() -> Any:
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt',
                                       [15, 16, 17])
-                        break
-                    else:
-                        break
+                    break
                 continue
 
             #! Slot 7
@@ -243,9 +226,7 @@ def view_saved() -> Any:
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt',
                                       [18, 19, 20])
-                        break
-                    else:
-                        break
+                    break
                 continue
 
             #! Slot 8
@@ -259,9 +240,7 @@ def view_saved() -> Any:
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt',
                                       [21, 22, 23])
-                        break
-                    else:
-                        break
+                    break
                 continue
 
             #! Slot 9
@@ -275,9 +254,7 @@ def view_saved() -> Any:
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt',
                                       [24, 25, 26])
-                        break
-                    else:
-                        break
+                    break
                 continue
 
             #! Slot 10
@@ -291,17 +268,15 @@ def view_saved() -> Any:
                     if userChoice.startswith('del') or userChoice == 'delete':
                         del_FileLines(r'.\generated\saveslots.txt',
                                       [27, 28, 29])
-                        break
-                    else:
-                        break
+                    break
                 continue
 
-            #! Slot 11
+            #^ Generate new string:
             elif menuChoice == '11':  #& Returns the Random Generator Function.
                 load('\nLoading', 'Ok!')
                 return stringGenerator()
 
-            #! Slot 12
+            #* Return all occupied save-slots:
             elif menuChoice == '12':  #& Displays ALL SAVED PWs.
                 try:
                     print('\n\nAll Saved PWs:\n')
@@ -319,7 +294,7 @@ def view_saved() -> Any:
                     input('\nPress [ENTER] to continue.\n')
                     continue
 
-                #* Display message when total saved strings < 10 and all existing saved strings have been returned:
+                #& Display message when total saved strings < 10 and all existing saved strings have been returned:
                 except IndexError:
                     print(
                         '\nFinished Loading Saved Strings!\nAll Remaining Save Slots Empty.\n'
@@ -327,8 +302,7 @@ def view_saved() -> Any:
                     input('\nPress [ENTER] to continue.\n')
                     continue
 
-            #! Slot 13
-            #! ERASES ALL FROM PW FILE!!
+            #! DELETE ALL SAVED STRINGS:
             elif menuChoice == '13':
 
                 while True:
@@ -515,14 +489,14 @@ def globalMenu() -> Union[Any, NoReturn]:
             load('\nExiting Program', 'Good-Bye')
             s(0.75)
             return ex(0)
+
         elif user_inp == '':
             print('\nERROR:\nBlank input - Must enter valid option.')
             s(0.75)
 
-        elif ValueError or TypeError:
+        else:
             print(f'\nERROR\nInvalid input: "{user_inp}"')
             s(0.75)
-            continue
 
 
 def cleanup(mode: str = None) -> NoReturn:
@@ -571,11 +545,9 @@ def cleanup(mode: str = None) -> NoReturn:
 
     #~ Delete "lastgerated.txt" if "saveslots.txt" doesn't exist:
     elif mode == 'light':
-        if exists(r'.\generated\saveslots.txt') == False:
-
-            #! Delete "lastgenerated.txt"
-            if exists(r'.\generated\lastgenerated.txt') == True:
-                remove(r'.\generated\lastgenerated.txt')
+        if (exists(r'.\generated\saveslots.txt') == False
+                and exists(r'.\generated\lastgenerated.txt') == True):
+            remove(r'.\generated\lastgenerated.txt')
 
     elif mode == 'None':
         raise ValueError(

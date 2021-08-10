@@ -1,6 +1,16 @@
 # StringGen
 
-> v0.5.0-Alpha
+> v0.6.1-Alpha
+
+---
+
+## Instructions
+
+---
+
+StringGen is very simple to use. Instructions will appear on screen for each step when running the program, and all user interaction is done through typing out the appropriate response, and pressing **ENTER** to confirm your command.
+
+As of now StringGen is command-line only, but soon I plan on starting the implementation of a simple GUI front-end.
 
 ---
 
@@ -18,10 +28,6 @@ Thank you so much for reading, and feel free to submit and bugs/feedback you may
 
 ---
 
-## Instructions
+### StringGen CLI Screenshot
 
----
-
-StringGen is very simple to use. Instructions will appear on screen for each step when running the program, and all user interaction is done through typing out the appropriate response, and pressing **ENTER** to confirm your command.
-
-As of now StringGen is command-line only, but soon I plan on starting the implementation of a simple GUI front-end.
+![StringGenCLI](SG050a.png)
