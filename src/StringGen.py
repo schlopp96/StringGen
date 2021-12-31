@@ -1,7 +1,8 @@
-# #^ StringGen - v0.6.1-Alpha Build
+#!/usr/bin/env python3
+#^ StringGen - v0.7.0-Alpha Build
 #! Random-String-Generation CLI Tool
 #TODO: Begin GUI development.
-#FIXME:  #& Continue to work on new ideas.
+#TODO: Continue to work on new ideas.
 #?+++++++++++++++++++++++++++++Libraries/Modules+++++++++++++++++++++++++++++?#
 import secrets
 from datetime import datetime as ct
@@ -11,7 +12,8 @@ from os.path import dirname as curFolder
 from os.path import exists
 from sys import exit as ex
 from time import sleep as s
-from typing import Any, NoReturn, Union
+from typing import Any, NoReturn
+
 from delFL import del_FileLines
 from loadingSequence import load
 
@@ -22,61 +24,61 @@ cwd(curFolder(curFolder(__file__)))
 
 
 #!+++++++++++++++++++++++++++++++++Functions+++++++++++++++++++++++++++++++++!#
-def programStart() -> Union[Any, NoReturn]:
+def programStart() -> None:
     """
     Begin program start-up sequence.
 
     - Displays Current time Using (yyy-mm-dd hh:mm:ss) Format.
     - Displays Welcome Message.
     - Starts Application.
-    :returns: start-up sequence of program path.
+    :return: start-up sequence of program path.
     :rtype: Any | NoReturn
     """
-    print('\nWelcome to StringGen v0.6.1-Alpha!\n')
+    print('\nWelcome to StringGen v0.7.0-Alpha!\n')
     print(f'The Current Time Is:\n{ct.now().strftime("%Y-%m-%d %H:%M:%S")}'
           )  #? Displays time.
-    return viewLastGenerated()
 
 
-def viewLastGenerated() -> Union[Any, NoReturn]:
+def get_LastGenerated() -> Any | NoReturn:
     """Ask user whether to return most recently saved string or continue to generator.
 
-    :returns: contents of ".\generated\lastgenerated.txt" if able and/or continue to random string generator.
+    :return: display contents of ".\generated\lastgenerated.txt" if able and/or continue to random string generator.
     :rtype: Any | NoReturn
     """
 
     #? Checks for/opens existing "last generated" file:
-    if exists(r'.\generated\lastgenerated.txt') == True:
-        lastGenerated = open(r'.\generated\lastgenerated.txt').read()
+    try:
+        if exists(r'.\generated\lastgenerated.txt'):
+            lastGenerated: str = open(r'.\generated\lastgenerated.txt').read()
 
-        while True:
-            q_lastGenerated = input(
-                'Would you like to see your most recent saved entry? Y/N?\n> '
-            ).lower()
-
-            #* Yes:
-            if q_lastGenerated.startswith('y'):
-                print(
-                    f'\nYour last saved string is {str(len(lastGenerated))} characters long:\n{lastGenerated}'
+            while True:
+                q_lastGenerated = input(
+                    'Would you like to see your most recent saved entry? Y/N?\n> '
                 )
-                load('\nLoading Menu', 'Done!')
-                return globalMenu()
 
-            #! No:
-            elif q_lastGenerated.startswith('n'):
-                load('\nLoading menu', 'Done!')
-                return globalMenu()
+                #* Yes:
+                if q_lastGenerated.lower().startswith('y'):
+                    print(
+                        f'\nYour last saved string is {(len(lastGenerated))} characters long:\n{lastGenerated}'
+                    )
+                    break
 
-            #& Error/Invalid:
-            else:
-                print(
-                    '\nERROR:\nInvalid Input. Acceptable choices are:\n- "y" or "yes"\n- "n" or "no".\n'
-                )
-                s(1)
-                continue
+                #! No:
+                elif q_lastGenerated.lower().startswith('n'):
+                    break
 
-    #~ No "lastgenerated.txt" found to exist:
-    else:
+                #& Error/Invalid:
+                else:
+                    print(
+                        '\nERROR:\nInvalid Input. Acceptable choices are:\n- "y" or "yes"\n- "n" or "no".\n'
+                    )
+                    s(1)
+                    continue
+        load('\nLoading Menu', 'Done!', False)
+        return globalMenu()
+
+    except FileNotFoundError:
+        print("No existing saved entries found.")
         replaceFile = open(r'.\generated\lastgenerated.txt', 'x')
         replaceFile.close()
         print(
@@ -88,7 +90,7 @@ def viewLastGenerated() -> Union[Any, NoReturn]:
 def viewSaved_menu() -> None:
     """Displays options for editing saved strings.
 
-    :returns: menu listing all available slots/options.
+    :return: menu listing all available slots/options.
     :rtype: None
     """
 
@@ -110,10 +112,35 @@ def viewSaved_menu() -> None:
     print(30 * "-")
 
 
+def deleteAll() -> Any:
+    while True:
+        print(
+            '\nWARNING!\nTHIS ACTION CANNOT BE UNDONE. IF YOU CHOOSE TO CLEAR ALL PWs, THEY WILL BE GONE FOREVER AND EVER.'
+        )
+        amSure: str = input('\nARE YOU SURE? Y/N: ').lower()
+        if str(amSure).startswith('y'):
+            #! Deletes both recently saved, and last-generated pw files:
+            #* Checks for saved entry list & deletes upon discovery:
+            if exists(r'.\generated\saveslots.txt') == True:
+                remove(r'.\generated\saveslots.txt')
+            #* Checks for "recently generated" list & deletes upon discovery:
+            if exists(r'.\generated\lastgenerated.txt') == True:
+                remove(r'.\generated\lastgenerated.txt')
+            load('\nClearing Saved Strings',
+                 'All Strings Deleted Successfully!')
+            return stringGenerator()
+        elif str(amSure) == 'n':
+            return view_saved()
+        else:
+            print('\nERROR:\nMUST ENTER ONLY "Y" or "N".')
+            s(0.75)
+            continue
+
+
 def view_saved() -> Any:  # sourcery no-metrics
     """Process menu operations to view/modify saved strings and handle user input.
 
-    :returns: operations chosen by user
+    :return: operations chosen by user
     :rtype: Any
     """
 
@@ -124,8 +151,7 @@ def view_saved() -> Any:  # sourcery no-metrics
         viewSaved_menu()
         menuChoice: str = input(
             'Enter [1-13] to make a selection, or enter "done" when finished.\n> '
-        ).lower()
-
+        )
         try:
             #! Slot 1
             if menuChoice == '1':
@@ -273,7 +299,7 @@ def view_saved() -> Any:  # sourcery no-metrics
 
             #^ Generate new string:
             elif menuChoice == '11':  #& Returns the Random Generator Function.
-                load('\nLoading', 'Ok!')
+                load('\nLoading', 'Ok!', False)
                 return stringGenerator()
 
             #* Return all occupied save-slots:
@@ -304,36 +330,9 @@ def view_saved() -> Any:  # sourcery no-metrics
 
             #! DELETE ALL SAVED STRINGS:
             elif menuChoice == '13':
+                deleteAll()
 
-                while True:
-                    print(
-                        '\nWARNING!\nTHIS ACTION CANNOT BE UNDONE. IF YOU CHOOSE TO CLEAR ALL PWs, THEY WILL BE GONE FOREVER AND EVER.'
-                    )
-                    amSure: str = input('\nARE YOU SURE? Y/N: ').lower()
-
-                    if str(amSure).startswith('y'):
-                        #! Deletes both recently saved, and last-generated pw files:
-
-                        #* Checks for saved entry list & deletes upon discovery:
-                        if exists(r'.\generated\saveslots.txt') == True:
-                            remove(r'.\generated\saveslots.txt')
-                        #* Checks for "recently generated" list & deletes upon discovery:
-                        if exists(r'.\generated\lastgenerated.txt') == True:
-                            remove(r'.\generated\lastgenerated.txt')
-
-                        load('\nClearing Saved Strings',
-                             'All Strings Deleted Successfully!')
-                        return stringGenerator()
-
-                    elif str(amSure) == 'n':
-                        return view_saved()
-
-                    else:
-                        print('\nERROR:\nMUST ENTER ONLY "Y" or "N".')
-                        s(0.75)
-                        continue
-
-            elif menuChoice == 'done':
+            elif menuChoice.lower() == 'done':
                 #* Once done with the PW Menu, program moves on to PW gen function.
                 load('\nLoading PW Generator', 'Done!')
                 return stringGenerator()
@@ -358,15 +357,14 @@ def stringGenerator() -> Any:
     """Generate string consisting of up to 50 randomly-chosen words.
 
     - All available words are pulled from a dictionary file which contains over 1.5 MILLION words.
-    - :returns: pre-determined length of random words combined into a single string.
+    - :return: pre-determined length of random words combined into a single string.
     - :rtype: Any
     """
 
     while True:
-        print(
-            '\nEnter the number of random words that you\'d like to generate.')
         q_strLen = input(
-            'String Length [Enter 1-50 or \"E\" to Exit]: ').lower()
+            '\nEnter the number of random words that you\'d like to generate.\nString Length [Enter 1-50 or \"E\" to Exit]: '
+        )
         try:
             strLen: int = int(q_strLen)
 
@@ -386,7 +384,7 @@ def stringGenerator() -> Any:
                 break
 
         except ValueError:
-            if q_strLen == 'e' or q_strLen == 'exit':
+            if q_strLen.lower() in ['e', 'exit']:
                 cleanup(mode='full')
 
             else:
@@ -402,7 +400,17 @@ def stringGenerator() -> Any:
             secrets.choice(strList) for i in range(strLen)[:50])
 
     print(f'\nYour New Generated String:\n\n{str_FINAL}')
+    return save_prompt(str_FINAL)
 
+
+def save_prompt(string):
+    """Prompt user whether or not to save latest generated string.
+
+    :param string: string to save.
+    :type string: str
+    :return: save string or return to string generator.
+    :rtype: Any
+    """
     while True:  #? Begin Options to Save, New, or Exit:
         q_saveStr = input(
             '\nWould you like to save this Word?\nENTER "save", "new", or "exit" > '
@@ -410,7 +418,7 @@ def stringGenerator() -> Any:
 
         if q_saveStr.startswith('save'):
 
-            if exists(r'.\generated\saveslots.txt') == True:
+            if exists(r'.\generated\saveslots.txt'):
 
                 saveSlots_FL = open(r'.\generated\saveslots.txt').readlines(
                 )  #? opens saveslots.txt and pulls out content into a list.
@@ -426,30 +434,17 @@ def stringGenerator() -> Any:
 
                 #* Add result to both "saved" & "last generated" docs:
                 saveSlots_FH = open(r'.\generated\saveslots.txt', 'a')
-                saveSlots_FH.write(
-                    f'Time Saved: {ct.now().strftime("%Y-%m-%d %H:%M:%S")}\n{str_FINAL}\n\n'
-                )
-                saveSlots_FH.close()
-                lastGenerated = open(r'.\generated\lastgenerated.txt', 'w')
-                lastGenerated.write(str_FINAL)
-                lastGenerated.close()
-                load('\nSaving to Open Slot', 'Successfully Saved!')
-
-                return globalMenu()
-
-            #* Create new "save-slots" file if none currently exist:
             else:
                 saveSlots_FH = open(r'.\generated\saveslots.txt', 'x')
-                saveSlots_FH.write(
-                    f'Time Saved: {ct.now().strftime("%Y-%m-%d %H:%M:%S")}\n{str_FINAL}\n\n'
-                )
-                saveSlots_FH.close()
-                lastGenerated = open(r'.\generated\lastgenerated.txt', 'w')
-                lastGenerated.write(str_FINAL)
-                lastGenerated.close()
-                load('\nSaving to Open Slot', 'Successfully Saved!')
+            saveSlots_FH.write(
+                f'Time Saved: {ct.now().strftime("%Y-%m-%d %H:%M:%S")}\n{string}\n\n'
+            )
+            saveSlots_FH.close()
+            with open(r'.\generated\lastgenerated.txt', 'w') as lastGenerated:
+                lastGenerated.write(string)
+            load('\nSaving to Open Slot', 'Successfully Saved!')
 
-                return globalMenu()
+            return globalMenu()
 
         elif q_saveStr == 'new':
             return stringGenerator()
@@ -463,14 +458,14 @@ def stringGenerator() -> Any:
             continue
 
 
-def globalMenu() -> Union[Any, NoReturn]:
+def globalMenu() -> Any | NoReturn:
     """Ask user to choose next task.
 
     - Select option "1" to generate a new string.
     - Select option "2" to view/edit saved strings.
     - Select option "3" to exit the program.
 
-    :returns: user prompt to select next task from menu options or exit program.
+    :return: user prompt to select next task from menu options or exit program.
     :rtype: Any | NoReturn
     """
     while True:
@@ -482,11 +477,11 @@ def globalMenu() -> Union[Any, NoReturn]:
             return stringGenerator()
 
         elif user_inp == '2':
-            load('\nLoading Menu', 'Ok!')
+            load('\nLoading Menu', 'Ok!', False)
             return view_saved()
 
         elif user_inp == '3':
-            load('\nExiting Program', 'Good-Bye')
+            load('\nExiting Program', 'Good-Bye', False)
             s(0.75)
             return ex(0)
 
@@ -503,32 +498,36 @@ def cleanup(mode: str = None) -> NoReturn:
     """Ensure any temporary or leftover files are cleaned up and restore appropriate directory states before exiting.
 
     Parameters:
-    - :param mode: the extensiveness of file-deletion/restoration to be done.
-    - :type mode: (str)
-        - `if mode == "full":`
-            - Check for both "saveslots.txt" and "lastgenerated.txt":
-                - 1). if "saveslots.txt" DOES exist:
-                    - if "saveslots.txt" is blank:
-                        - DELETE "saveslots.txt" AND "lastgenerated.txt"
-                    - if ANY entries exist within "saveslots.txt":
-                        - nothing is changed.
+        :param mode: the extensiveness of file-deletion/restoration to be done.
+        :type mode: str
+            - `if mode == "full":`
+                - Check for both "saveslots.txt" and "lastgenerated.txt":
+                    - 1). if "saveslots.txt" DOES exist:
+                        - if "saveslots.txt" is blank:
+                            - DELETE "saveslots.txt" AND "lastgenerated.txt"
+                        - if ANY entries exist within "saveslots.txt":
+                            - nothing is changed.
+                            - exit program.
+                    - 2). If "saveslots.txt" DOES NOT exist:
+                        - ensure that there is NO "lastgenerated.txt" file, and delete if found
                         - exit program.
-                - 2). If "saveslots.txt" DOES NOT exist:
-                    - ensure that there is NO "lastgenerated.txt" file, and delete if found
-                    - exit program.
-        - `if mode == "light":`
-            - Check for existence of "saveslots.txt" file:
-                - 1). If file does NOT exist:
-                    - delete "lastgenerated.txt"
-                    - exit program.
-                - 2). If file DOES exist:
-                    - nothing is changed
-                    - exit program.
-    - :returns: deletes temporary/leftover/unneeded files from program directories to prevent fatal errors before exiting program.
-    - :rtype: NoReturn
+            - `if mode == "light":`
+                - Check for existence of "saveslots.txt" file:
+                    - 1). If file does NOT exist:
+                        - delete "lastgenerated.txt"
+                        - exit program.
+                    - 2). If file DOES exist:
+                        - nothing is changed
+                        - exit program.
+        :return: deletes temporary/leftover/unneeded files from program directories to prevent fatal errors before exiting program.
+        :rtype: NoReturn
     """
     #~ Delete both "saveslots.txt" and "lastgenerated.txt", if former is empty.
-    if mode == 'full':
+    if mode == 'None':
+        raise ValueError(
+            f'\nERROR:\nInvalid *args choice - "{mode}".\nMust set parameter to "full" or "light" only.\n'
+        )
+    elif mode == 'full':
         #& Check for existence of "saveslots.txt" file, and deletes if blank:
         if exists(r'.\generated\saveslots.txt') == True:
             if len(open(r'.\generated\saveslots.txt').readlines()) < 1:
@@ -543,18 +542,19 @@ def cleanup(mode: str = None) -> NoReturn:
             if exists(r'.\generated\lastgenerated.txt') == True:
                 remove(r'.\generated\lastgenerated.txt')
 
-    #~ Delete "lastgerated.txt" if "saveslots.txt" doesn't exist:
     elif mode == 'light':
         if (exists(r'.\generated\saveslots.txt') == False
                 and exists(r'.\generated\lastgenerated.txt') == True):
             remove(r'.\generated\lastgenerated.txt')
 
-    elif mode == 'None':
-        raise ValueError(
-            f'\nERROR:\nInvalid *args choice - "{mode}".\nMust set parameter to "full" or "light" only.\n'
-        )
-    load('\nPreparing to close program', 'Goodbye!')
+    load('\nPreparing to close program', 'Goodbye!', False)
     ex()
 
 
-programStart()
+def main():
+    programStart()
+    get_LastGenerated()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,6 +1,6 @@
 # StringGen
 
-> v0.6.1-Alpha
+> v0.7.0a Update
 
 ---
 
