@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#^ StringGen - v0.7.0-Alpha Build
+#^ StringGen - v0.7.1
 #! Random-String-Generation CLI Tool
 #TODO: Begin GUI development.
 #TODO: Continue to work on new ideas.
@@ -15,7 +15,7 @@ from time import sleep as s
 from typing import Any, NoReturn
 
 from delFL import del_FileLines
-from loadingSequence import load
+from loadSequence import load
 
 #~ Set Program Directory
 cwd(curFolder(curFolder(__file__)))
@@ -34,13 +34,12 @@ def programStart() -> None:
     :return: start-up sequence of program path.
     :rtype: Any | NoReturn
     """
-    print('\nWelcome to StringGen v0.7.0-Alpha!\n')
-    print(f'The Current Time Is:\n{ct.now().strftime("%Y-%m-%d %H:%M:%S")}'
-          )  #? Displays time.
+    print('\nWelcome to StringGen v0.7.1\n')
+    print(f'The Current Time Is:\n{ct.now().strftime("%Y-%m-%d %H:%M:%S")}')
 
 
 def get_LastGenerated() -> Any | NoReturn:
-    """Ask user whether to return most recently saved string or continue to generator.
+    """Prompt whether to return most recently saved string or continue to generator.
 
     :return: display contents of ".\generated\lastgenerated.txt" if able and/or continue to random string generator.
     :rtype: Any | NoReturn
@@ -113,6 +112,11 @@ def viewSaved_menu() -> None:
 
 
 def deleteAll() -> Any:
+    """Delete all saved strings from containing file.
+
+    :return: File containing saved strings will be cleared entirely.
+    :rtype: Any
+    """
     while True:
         print(
             '\nWARNING!\nTHIS ACTION CANNOT BE UNDONE. IF YOU CHOOSE TO CLEAR ALL PWs, THEY WILL BE GONE FOREVER AND EVER.'
