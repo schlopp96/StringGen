@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#^ StringGen - v0.7.1
+
 #! Random-String-Generation CLI Tool
 #TODO: Begin GUI development.
 #TODO: Continue to work on new ideas.
@@ -7,20 +7,21 @@
 import secrets
 from datetime import datetime as ct
 from os import chdir as cwd
-from os import remove
+from os import remove, rename
 from os.path import dirname as curFolder
-from os.path import exists
+from os.path import exists, abspath as getAbsPath
 from sys import exit as ex
 from time import sleep as s
 from typing import Any, NoReturn
 
-from delFL import del_FileLines
-from loadSequence import load
+from PyLoadBar import load
 
 #~ Set Program Directory
 cwd(curFolder(curFolder(__file__)))
 
 #?+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++?#
+
+__version__ = '0.8.0a'
 
 
 #!+++++++++++++++++++++++++++++++++Functions+++++++++++++++++++++++++++++++++!#
@@ -34,8 +35,8 @@ def programStart() -> None:
     :return: start-up sequence of program path.
     :rtype: Any | NoReturn
     """
-    print('\nWelcome to StringGen v0.7.1\n')
-    print(f'The Current Time Is:\n{ct.now().strftime("%Y-%m-%d %H:%M:%S")}')
+    print(f'\nWelcome to StringGen v{__version__}\n')
+    print(f'The Current Time Is:\n{ct.now().strftime("%Y-%m-%d %H:%M:%S")}\n')
 
 
 def get_LastGenerated() -> Any | NoReturn:
@@ -57,6 +58,7 @@ def get_LastGenerated() -> Any | NoReturn:
 
                 #* Yes:
                 if q_lastGenerated.lower().startswith('y'):
+                    load('Loading recently saved string', 'Ready...!')
                     print(
                         f'\nYour last saved string is {(len(lastGenerated))} characters long:\n{lastGenerated}'
                     )
@@ -73,11 +75,14 @@ def get_LastGenerated() -> Any | NoReturn:
                     )
                     s(1)
                     continue
-        load('\nLoading Menu', 'Done!', False)
+        else:
+            load('Loading String Generator', progressbar=False)
+            return stringGenerator()
+
+        load('\nLoading Menu', progressbar=False)
         return globalMenu()
 
     except FileNotFoundError:
-        print("No existing saved entries found.")
         replaceFile = open(r'.\generated\lastgenerated.txt', 'x')
         replaceFile.close()
         print(
@@ -168,7 +173,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     userChoice = input('> ').lower()
 
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt', [0, 1, 2])
+                        deleteFL(r'.\generated\saveslots.txt', [0, 1, 2])
 
                         #& Deletes most recently generated string if saveslots.txt is empty.
                         if len(open(r'.\generated\saveslots.txt').read()) < 1:
@@ -186,7 +191,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     userChoice = input('> ').lower()
 
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt', [3, 4, 5])
+                        deleteFL(r'.\generated\saveslots.txt', [3, 4, 5])
                     break
                 continue
 
@@ -199,7 +204,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     )
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt', [6, 7, 8])
+                        deleteFL(r'.\generated\saveslots.txt', [6, 7, 8])
                     break
                 continue
 
@@ -212,7 +217,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     )
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt',
+                        deleteFL(r'.\generated\saveslots.txt',
                                       [9, 10, 11])
                     break
                 continue
@@ -226,7 +231,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     )
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt',
+                        deleteFL(r'.\generated\saveslots.txt',
                                       [12, 13, 14])
                     break
                 continue
@@ -240,7 +245,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     )
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt',
+                        deleteFL(r'.\generated\saveslots.txt',
                                       [15, 16, 17])
                     break
                 continue
@@ -254,7 +259,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     )
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt',
+                        deleteFL(r'.\generated\saveslots.txt',
                                       [18, 19, 20])
                     break
                 continue
@@ -268,7 +273,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     )
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt',
+                        deleteFL(r'.\generated\saveslots.txt',
                                       [21, 22, 23])
                     break
                 continue
@@ -282,7 +287,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     )
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt',
+                        deleteFL(r'.\generated\saveslots.txt',
                                       [24, 25, 26])
                     break
                 continue
@@ -296,7 +301,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                     )
                     userChoice = input('> ').lower()
                     if userChoice.startswith('del') or userChoice == 'delete':
-                        del_FileLines(r'.\generated\saveslots.txt',
+                        deleteFL(r'.\generated\saveslots.txt',
                                       [27, 28, 29])
                     break
                 continue
@@ -341,7 +346,7 @@ def view_saved() -> Any:  # sourcery no-metrics
                 load('\nLoading PW Generator', 'Done!')
                 return stringGenerator()
 
-            elif menuChoice == '':
+            elif not menuChoice:
                 print('\nERROR:\nBlank input - Must enter valid option.')
                 s(1)
 
@@ -400,8 +405,7 @@ def stringGenerator() -> Any:
 
     with open(r'.\Dictionary\RandomWordDictionary.txt') as dictionary:
         strList: list = [words.strip() for words in dictionary]
-        str_FINAL: str = ' '.join(
-            secrets.choice(strList) for i in range(strLen)[:50])
+        str_FINAL: str = ' '.join(secrets.choice(strList) for _ in range(strLen)[:50])
 
     print(f'\nYour New Generated String:\n\n{str_FINAL}')
     return save_prompt(str_FINAL)
@@ -477,25 +481,27 @@ def globalMenu() -> Any | NoReturn:
             '_____________________________________\n| Would you like to:                |\n| 1.) Generate another word/phrase? |\n| 2.) View Your Saved Data?         |\n| 3.) Exit?                         |\n|___________________________________|\n\nENTER [1-3] > '
         ).lower()
 
-        if user_inp == '1':
-            return stringGenerator()
+        match user_inp:
 
-        elif user_inp == '2':
-            load('\nLoading Menu', 'Ok!', False)
-            return view_saved()
+            case '1':
+                return stringGenerator()
 
-        elif user_inp == '3':
-            load('\nExiting Program', 'Good-Bye', False)
-            s(0.75)
-            return ex(0)
+            case '2':
+                load('\nLoading Menu', 'Ok!', False)
+                return view_saved()
 
-        elif user_inp == '':
-            print('\nERROR:\nBlank input - Must enter valid option.')
-            s(0.75)
+            case '3':
+                load('\nExiting Program', 'Good-Bye', False)
+                s(0.75)
+                return ex(0)
 
-        else:
-            print(f'\nERROR\nInvalid input: "{user_inp}"')
-            s(0.75)
+            case '':
+                print('\nERROR:\nBlank input - Must enter valid option.')
+                s(0.75)
+
+            case _ :
+                print(f'\nERROR\nInvalid input: "{user_inp}"')
+                s(0.75)
 
 
 def cleanup(mode: str = None) -> NoReturn:
@@ -527,7 +533,7 @@ def cleanup(mode: str = None) -> NoReturn:
         :rtype: NoReturn
     """
     #~ Delete both "saveslots.txt" and "lastgenerated.txt", if former is empty.
-    if mode == 'None':
+    if mode not in ['full', 'light']:
         raise ValueError(
             f'\nERROR:\nInvalid *args choice - "{mode}".\nMust set parameter to "full" or "light" only.\n'
         )
@@ -553,6 +559,73 @@ def cleanup(mode: str = None) -> NoReturn:
 
     load('\nPreparing to close program', 'Goodbye!', False)
     ex()
+
+
+def deleteFL(file_ORIGINAL: str, line_numbers: list) -> None:
+    """Delete specific line-numbers from a *.txt document.
+
+    - Make sure to include either DOUBLE SLASH MARKS, or a RAW-STRING LITERAL upon assigning `file_ORIGINAL (str)` parameter.
+    - Examples of correct usage:
+        - Absolute path with raw string literal:
+            - >>> `delLines(r'c:/Users/Desktop/textfile.txt', [0, 1, 2])`
+        - Relative path with escape characters
+            - >>> `delLines(r'.//desktop//textfile.txt', [0, 1, 2])`
+
+    - Lists have a starting index of ZERO.
+    - Inclusive.
+    - Example of correct usage:
+        - >>> `del_FileLines(file_ORIGINAL, [0, 1, 2])`
+            - This would delete the first three lines from the document `file_ORIGINAL`.
+
+    Parameters:
+    :param file_ORIGINAL: filepath of the document you wish to edit. Can be absolute or relative.
+    :type file_ORIGINAL: str
+    :param line_numbers: line numbers to delete.
+    :type line_numbers: list
+    :return: copy of `file_ORIGINAL` with predetermined line numbers removed.
+    :rtype: None
+
+    """
+
+    #@ Success/Error flag:
+    success: bool = True
+
+    print("\nValidating file location...")
+    s(1.25)
+
+    #! File not found:
+    if not exists(getAbsPath(file_ORIGINAL)):
+        raise FileNotFoundError(
+            f'"{file_ORIGINAL}" cannot be found, or does not exist.\nPlease check your spelling, ensure that the file extension and\or syntax is correct, then try again.\n'
+        )
+
+    print(f'Successfully validated "{getAbsPath(file_ORIGINAL)}"!\n')
+    s(0.75)
+
+    #* Create identical copy of original for modifying:
+    file_TEMP: str = f'file_ORIGINAL{".bak"}'
+    is_skipped: bool = False
+    line_count: int = 0
+    with open(file_ORIGINAL, 'r') as file_READ, open(file_TEMP,
+                                                     'w') as file_WRITE:
+        for line in file_READ:
+            if line_count not in line_numbers:
+                file_WRITE.write(line)
+            else:
+                is_skipped = True
+            line_count += 1
+
+    load(
+        f'Deleting lines {line_numbers}...\n',
+        f'-    Done!    -\n\nSuccessfully removed lines: {line_numbers}\nfrom document: "{getAbsPath(file_ORIGINAL)}".\n'
+    )
+    s(1.25)
+
+    if is_skipped:  #^ OVERWRITE file_ORIGINAL with file_TEMP contents.
+        remove(file_ORIGINAL)
+        return rename(file_TEMP, file_ORIGINAL)
+    else:  #^ Delete file_TEMP, do not overwrite file_ORIGINAL.
+        return remove(file_TEMP)
 
 
 def main():
