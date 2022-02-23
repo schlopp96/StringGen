@@ -12,6 +12,16 @@ As of now StringGen is command-line only, but soon I plan on starting the implem
 
 ---
 
+## Installation
+
+---
+
+1. Download zip archive containing source code.
+2. Extract to desired installation location.
+3. Open console/terminal inside "StringGen" folder, and enter `pip install -r requirements.txt` to install dependencies.
+4. Run `python "path/to/directory/StringGen/src/StringGen.py"`
+5. Done!
+
 ## About StringGen
 
 ---
