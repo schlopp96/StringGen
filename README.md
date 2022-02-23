@@ -1,7 +1,5 @@
 # StringGen
 
-> v0.7.0a Update
-
 ---
 
 ## Instructions
