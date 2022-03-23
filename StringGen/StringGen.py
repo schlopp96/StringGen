@@ -17,7 +17,7 @@ from typing import Any, NoReturn
 from PyLoadBar import load
 
 #~ Set Program Directory
-cwd(curFolder(curFolder(__file__)))
+cwd(curFolder(__file__))
 
 #?+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++?#
 
@@ -39,7 +39,7 @@ def programStart() -> None:
     print(f'The Current Time Is:\n{ct.now().strftime("%Y-%m-%d %H:%M:%S")}\n')
 
 
-def get_LastGenerated() -> Any | NoReturn:
+def last_gen() -> Any | NoReturn:
     """Prompt whether to return most recently saved string or continue to generator.
 
     :return: display contents of ".\generated\lastgenerated.txt" if able and/or continue to random string generator.
@@ -47,48 +47,43 @@ def get_LastGenerated() -> Any | NoReturn:
     """
 
     #? Checks for/opens existing "last generated" file:
-    try:
-        if exists(r'.\generated\lastgenerated.txt'):
-            lastGenerated: str = open(r'.\generated\lastgenerated.txt').read()
 
-            while True:
-                q_lastGenerated = input(
-                    'Would you like to see your most recent saved entry? Y/N?\n> '
+    if exists(r'.\generated\lastgenerated.txt'):
+        lastGenerated: str = open(r'.\generated\lastgenerated.txt').read()
+        while True:
+            q_lastGenerated = input(
+                'Would you like to see your most recent saved entry? Y/N?\n> '
+            )
+            #* Yes:
+            if q_lastGenerated.lower().startswith('y'):
+                load('Loading recently saved string', 'Ready...!')
+                print(
+                    f'\nYour last saved string is {(len(lastGenerated))} characters long:\n{lastGenerated}'
                 )
-
-                #* Yes:
-                if q_lastGenerated.lower().startswith('y'):
-                    load('Loading recently saved string', 'Ready...!')
-                    print(
-                        f'\nYour last saved string is {(len(lastGenerated))} characters long:\n{lastGenerated}'
-                    )
-                    break
-
-                #! No:
-                elif q_lastGenerated.lower().startswith('n'):
-                    break
-
-                #& Error/Invalid:
-                else:
-                    print(
-                        '\nERROR:\nInvalid Input. Acceptable choices are:\n- "y" or "yes"\n- "n" or "no".\n'
-                    )
-                    s(1)
-                    continue
-        else:
-            load('Loading String Generator', progressbar=False)
-            return stringGenerator()
-
-        load('\nLoading Menu', progressbar=False)
+                break
+            #! No:
+            elif q_lastGenerated.lower().startswith('n'):
+                break
+            #& Error/Invalid:
+            else:
+                print(
+                    '\nERROR:\nInvalid Input. Acceptable choices are:\n- "y" or "yes"\n- "n" or "no".\n'
+                )
+                s(1)
+                continue
+        load('\nLoading Menu', enable_display=False)
         return globalMenu()
-
-    except FileNotFoundError:
+    else:
         replaceFile = open(r'.\generated\lastgenerated.txt', 'x')
         replaceFile.close()
         print(
-            '\nNo recently generated string detected.\nContinuing to random string generator.'
-        )
+            '\nNo recently generated string detected.\n')
+        load('Continuing to random string generator.', 'Okay!')
         return stringGenerator()
+
+
+
+
 
 
 def viewSaved_menu() -> None:
@@ -127,7 +122,7 @@ def deleteAll() -> Any:
             '\nWARNING!\nTHIS ACTION CANNOT BE UNDONE. IF YOU CHOOSE TO CLEAR ALL PWs, THEY WILL BE GONE FOREVER AND EVER.'
         )
         amSure: str = input('\nARE YOU SURE? Y/N: ').lower()
-        if str(amSure).startswith('y'):
+        if amSure.startswith('y'):
             #! Deletes both recently saved, and last-generated pw files:
             #* Checks for saved entry list & deletes upon discovery:
             if exists(r'.\generated\saveslots.txt') == True:
@@ -138,7 +133,7 @@ def deleteAll() -> Any:
             load('\nClearing Saved Strings',
                  'All Strings Deleted Successfully!')
             return stringGenerator()
-        elif str(amSure) == 'n':
+        elif amSure == 'n':
             return view_saved()
         else:
             print('\nERROR:\nMUST ENTER ONLY "Y" or "N".')
@@ -308,7 +303,7 @@ def view_saved() -> Any:  # sourcery no-metrics
 
             #^ Generate new string:
             elif menuChoice == '11':  #& Returns the Random Generator Function.
-                load('\nLoading', 'Ok!', False)
+                load('\nLoading', 'Ok!', enable_display=False)
                 return stringGenerator()
 
             #* Return all occupied save-slots:
@@ -487,11 +482,11 @@ def globalMenu() -> Any | NoReturn:
                 return stringGenerator()
 
             case '2':
-                load('\nLoading Menu', 'Ok!', False)
+                load('\nLoading Menu', 'Ok!', enable_display=False)
                 return view_saved()
 
             case '3':
-                load('\nExiting Program', 'Good-Bye', False)
+                load('\nExiting Program', 'Good-Bye', enable_display=False)
                 s(0.75)
                 return ex(0)
 
@@ -557,7 +552,7 @@ def cleanup(mode: str = None) -> NoReturn:
                 and exists(r'.\generated\lastgenerated.txt') == True):
             remove(r'.\generated\lastgenerated.txt')
 
-    load('\nPreparing to close program', 'Goodbye!', False)
+    load('\nPreparing to close program', 'Goodbye!', enable_display=False)
     ex()
 
 
@@ -603,7 +598,7 @@ def deleteFL(file_ORIGINAL: str, line_numbers: list) -> None:
     s(0.75)
 
     #* Create identical copy of original for modifying:
-    file_TEMP: str = f'file_ORIGINAL{".bak"}'
+    file_TEMP: str = 'file_ORIGINAL.bak'
     is_skipped: bool = False
     line_count: int = 0
     with open(file_ORIGINAL, 'r') as file_READ, open(file_TEMP,
@@ -630,7 +625,7 @@ def deleteFL(file_ORIGINAL: str, line_numbers: list) -> None:
 
 def main():
     programStart()
-    get_LastGenerated()
+    last_gen()
 
 
 if __name__ == '__main__':
