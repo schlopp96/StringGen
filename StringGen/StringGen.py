@@ -71,7 +71,7 @@ def last_gen() -> Any | NoReturn:
                 )
                 s(1)
                 continue
-        load('\nLoading Menu', enable_display=False)
+        load('\nLoading Menu')
         return globalMenu()
     else:
         replaceFile = open(r'.\generated\lastgenerated.txt', 'x')
@@ -141,7 +141,7 @@ def deleteAll() -> Any:
             continue
 
 
-def view_saved() -> Any:  # sourcery no-metrics
+def view_saved() -> Any:  # sourcery skip: low-code-quality
     """Process menu operations to view/modify saved strings and handle user input.
 
     :return: operations chosen by user
@@ -303,7 +303,7 @@ def view_saved() -> Any:  # sourcery no-metrics
 
             #^ Generate new string:
             elif menuChoice == '11':  #& Returns the Random Generator Function.
-                load('\nLoading', 'Ok!', enable_display=False)
+                load('\nLoading', 'Ok!')
                 return stringGenerator()
 
             #* Return all occupied save-slots:
@@ -482,11 +482,11 @@ def globalMenu() -> Any | NoReturn:
                 return stringGenerator()
 
             case '2':
-                load('\nLoading Menu', 'Ok!', enable_display=False)
+                load('\nLoading Menu', 'Ok!')
                 return view_saved()
 
             case '3':
-                load('\nExiting Program', 'Good-Bye', enable_display=False)
+                load('\nExiting Program', 'Good-Bye')
                 s(0.75)
                 return ex(0)
 
@@ -499,7 +499,7 @@ def globalMenu() -> Any | NoReturn:
                 s(0.75)
 
 
-def cleanup(mode: str = None) -> NoReturn:
+def cleanup(mode: str | None = None) -> NoReturn:
     """Ensure any temporary or leftover files are cleaned up and restore appropriate directory states before exiting.
 
     Parameters:
@@ -552,7 +552,7 @@ def cleanup(mode: str = None) -> NoReturn:
                 and exists(r'.\generated\lastgenerated.txt') == True):
             remove(r'.\generated\lastgenerated.txt')
 
-    load('\nPreparing to close program', 'Goodbye!', enable_display=False)
+    load('\nPreparing to close program', 'Goodbye!')
     ex()
 
 
