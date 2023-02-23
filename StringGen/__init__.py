@@ -1,0 +1,1 @@
+from StringGen.main import main as StringGen

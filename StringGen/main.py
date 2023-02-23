@@ -14,15 +14,18 @@ from sys import exit as ex
 from time import sleep as s
 from typing import Any, NoReturn
 
-from PyLoadBar import load
+from PyLoadBar import PyLoadBar
 
 #~ Set Program Directory
 cwd(curFolder(__file__))
 
 #?+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++?#
 
-__version__ = '0.8.0a'
+__version__ = '0.8.0'
 
+bar_load = PyLoadBar()
+
+txt_load = PyLoadBar(False)
 
 #!+++++++++++++++++++++++++++++++++Functions+++++++++++++++++++++++++++++++++!#
 def programStart() -> None:
@@ -42,7 +45,7 @@ def programStart() -> None:
 def last_gen() -> Any | NoReturn:
     """Prompt whether to return most recently saved string or continue to generator.
 
-    :return: display contents of ".\generated\lastgenerated.txt" if able and/or continue to random string generator.
+    :return: display contents of `"~.\generated\lastgenerated.txt"` if able and/or continue to random string generator.
     :rtype: Any | NoReturn
     """
 
@@ -56,7 +59,7 @@ def last_gen() -> Any | NoReturn:
             )
             #* Yes:
             if q_lastGenerated.lower().startswith('y'):
-                load('Loading recently saved string', 'Ready...!')
+                bar_load.start('Loading recently saved string', 'Ready...!')
                 print(
                     f'\nYour last saved string is {(len(lastGenerated))} characters long:\n{lastGenerated}'
                 )
@@ -71,14 +74,14 @@ def last_gen() -> Any | NoReturn:
                 )
                 s(1)
                 continue
-        load('\nLoading Menu')
+        bar_load.start('\nLoading Menu')
         return globalMenu()
     else:
         replaceFile = open(r'.\generated\lastgenerated.txt', 'x')
         replaceFile.close()
         print(
             '\nNo recently generated string detected.\n')
-        load('Continuing to random string generator.', 'Okay!')
+        bar_load.start('Continuing to random string generator.', 'Okay!')
         return stringGenerator()
 
 
@@ -130,7 +133,7 @@ def deleteAll() -> Any:
             #* Checks for "recently generated" list & deletes upon discovery:
             if exists(r'.\generated\lastgenerated.txt') == True:
                 remove(r'.\generated\lastgenerated.txt')
-            load('\nClearing Saved Strings',
+            bar_load.start('\nClearing Saved Strings',
                  'All Strings Deleted Successfully!')
             return stringGenerator()
         elif amSure == 'n':
@@ -303,7 +306,7 @@ def view_saved() -> Any:  # sourcery skip: low-code-quality
 
             #^ Generate new string:
             elif menuChoice == '11':  #& Returns the Random Generator Function.
-                load('\nLoading', 'Ok!')
+                bar_load.start('\nLoading', 'Ok!')
                 return stringGenerator()
 
             #* Return all occupied save-slots:
@@ -338,7 +341,7 @@ def view_saved() -> Any:  # sourcery skip: low-code-quality
 
             elif menuChoice.lower() == 'done':
                 #* Once done with the PW Menu, program moves on to PW gen function.
-                load('\nLoading PW Generator', 'Done!')
+                bar_load.start('\nLoading PW Generator', 'Done!')
                 return stringGenerator()
 
             elif not menuChoice:
@@ -351,7 +354,7 @@ def view_saved() -> Any:  # sourcery skip: low-code-quality
                 continue
 
         except IndexError:
-            #! Return following string if request to load empty PW slot is called:
+            #! Return following string if request to bar_load.start empty PW slot is called:
             print(f'\nERROR\nSave slot {menuChoice} is empty.')
             s(0.75)
             continue
@@ -445,7 +448,7 @@ def save_prompt(string):
             saveSlots_FH.close()
             with open(r'.\generated\lastgenerated.txt', 'w') as lastGenerated:
                 lastGenerated.write(string)
-            load('\nSaving to Open Slot', 'Successfully Saved!')
+            bar_load.start('\nSaving to Open Slot', 'Successfully Saved!')
 
             return globalMenu()
 
@@ -482,11 +485,11 @@ def globalMenu() -> Any | NoReturn:
                 return stringGenerator()
 
             case '2':
-                load('\nLoading Menu', 'Ok!')
+                bar_load.start('\nLoading Menu', 'Ok!')
                 return view_saved()
 
             case '3':
-                load('\nExiting Program', 'Good-Bye')
+                bar_load.start('\nExiting Program', 'Good-Bye')
                 s(0.75)
                 return ex(0)
 
@@ -552,7 +555,7 @@ def cleanup(mode: str | None = None) -> NoReturn:
                 and exists(r'.\generated\lastgenerated.txt') == True):
             remove(r'.\generated\lastgenerated.txt')
 
-    load('\nPreparing to close program', 'Goodbye!')
+    bar_load.start('\nPreparing to close program', 'Goodbye!')
     ex()
 
 
@@ -610,7 +613,7 @@ def deleteFL(file_ORIGINAL: str, line_numbers: list) -> None:
                 is_skipped = True
             line_count += 1
 
-    load(
+    bar_load.start(
         f'Deleting lines {line_numbers}...\n',
         f'-    Done!    -\n\nSuccessfully removed lines: {line_numbers}\nfrom document: "{getAbsPath(file_ORIGINAL)}".\n'
     )

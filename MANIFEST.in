@@ -1,0 +1,5 @@
+include *.txt
+recursive-include StringGen *.txt
+recursive-include StringGen *.gitkeep
+recursive-include StringGen *.py
+recursive-include assets *.png
